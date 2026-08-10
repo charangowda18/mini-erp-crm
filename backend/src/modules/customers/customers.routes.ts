@@ -26,8 +26,14 @@ router.post(
   controller.create
 );
 
-// PUT /api/customers/:id - Update customer (Admin, Sales)
+// PUT and PATCH /api/customers/:id - Update customer (Admin, Sales)
 router.put(
+  '/:id',
+  roleGuard(UserRole.ADMIN, UserRole.SALES),
+  validate(updateCustomerSchema),
+  controller.update
+);
+router.patch(
   '/:id',
   roleGuard(UserRole.ADMIN, UserRole.SALES),
   validate(updateCustomerSchema),

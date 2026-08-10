@@ -26,15 +26,35 @@ router.post(
   controller.create
 );
 
-// PATCH /api/challans/:id/confirm - Confirm draft challan (Admin, Sales)
+// Confirm draft challan (Support PATCH, PUT, and POST to avoid frontend method mismatch)
 router.patch(
   '/:id/confirm',
   roleGuard(UserRole.ADMIN, UserRole.SALES),
   controller.confirm
 );
+router.put(
+  '/:id/confirm',
+  roleGuard(UserRole.ADMIN, UserRole.SALES),
+  controller.confirm
+);
+router.post(
+  '/:id/confirm',
+  roleGuard(UserRole.ADMIN, UserRole.SALES),
+  controller.confirm
+);
 
-// PATCH /api/challans/:id/cancel - Cancel challan (Admin)
+// Cancel challan (Support PATCH, PUT, and POST to avoid frontend method mismatch)
 router.patch(
+  '/:id/cancel',
+  roleGuard(UserRole.ADMIN),
+  controller.cancel
+);
+router.put(
+  '/:id/cancel',
+  roleGuard(UserRole.ADMIN),
+  controller.cancel
+);
+router.post(
   '/:id/cancel',
   roleGuard(UserRole.ADMIN),
   controller.cancel

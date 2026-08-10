@@ -29,8 +29,14 @@ router.post(
   controller.create
 );
 
-// PUT /api/products/:id - Update product (Admin, Warehouse)
+// PUT and PATCH /api/products/:id - Update product (Admin, Warehouse)
 router.put(
+  '/:id',
+  roleGuard(UserRole.ADMIN, UserRole.WAREHOUSE),
+  validate(updateProductSchema),
+  controller.update
+);
+router.patch(
   '/:id',
   roleGuard(UserRole.ADMIN, UserRole.WAREHOUSE),
   validate(updateProductSchema),
