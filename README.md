@@ -239,6 +239,23 @@ npm run build
 npm start
 ```
 
+## 🌟 Bonus Features Implemented
+
+The following extra features were successfully completed to showcase robust devops and advanced operations portal styling:
+
+### 1. Docker Virtualization & Setup (Bonus Point Requirement)
+A complete `docker-compose.yml` config is included to instantly run the PostgreSQL database and backend service in isolated containers:
+```bash
+docker compose up --build
+```
+This automatically handles binding, port exposure, and networking link connections.
+
+### 2. Export Invoice as PDF (Bonus Point Requirement)
+Inside the **Sales Challan Detail** view, clicking **Export PDF / Print** utilizes custom CSS print media rules:
+- Formats the page as a clean corporate invoice.
+- Hides dashboard headers, sidebar navigation, buttons, and alert toast popups automatically.
+- Produces a print-ready document or high-quality PDF directly from the browser.
+
 ## Assumptions
 
 1. Challan cancellation does not restore stock — a separate stock-in movement should be created
