@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, Package, FileText, AlertTriangle, LogOut, Search, Plus, 
-  ArrowUpDown, Check, Trash2, Calendar, ShoppingBag, Eye, X, Shield
+  ArrowUpDown, Check, Trash2, Calendar, ShoppingBag, Eye, X, Shield, Printer
 } from 'lucide-react';
 
 const API_BASE = "https://mini-erp-crm-api-t9uv.onrender.com/api";
@@ -775,6 +775,10 @@ function App() {
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
                 <button className="btn btn-secondary" onClick={() => setSelectedChallanId(null)}>
                   Back to List
+                </button>
+
+                <button className="btn btn-secondary" onClick={() => window.print()}>
+                  <Printer size={16} /> Export PDF / Print
                 </button>
                 
                 {challanDetail.status === 'Draft' && hasPermission('challans', 'confirm') && (

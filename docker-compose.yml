@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: erp-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: mini_erp_crm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: erp-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:password123@postgres:5432/mini_erp_crm
+      JWT_SECRET: mini-erp-crm-jwt-secret-key-2024
+      JWT_EXPIRES_IN: 24h
+      CORS_ORIGIN: "http://localhost:5173"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
