@@ -2,6 +2,24 @@
 
 A full-stack ERP/CRM system for a wholesale/distribution company. Built with **Node.js**, **TypeScript**, **Express.js**, and **PostgreSQL**.
 
+## 🚀 Live Links & Credentials
+
+* **Live Frontend UI:** [https://synergiz-hub.lovable.app](https://synergiz-hub.lovable.app)
+* **Live Backend API:** [https://mini-erp-crm-api-t9uv.onrender.com](https://mini-erp-crm-api-t9uv.onrender.com)
+* **API Health Check:** [https://mini-erp-crm-api-t9uv.onrender.com/api/health](https://mini-erp-crm-api-t9uv.onrender.com/api/health)
+* **Postman Collection:** Located in the repository at `/backend/postman/Mini_ERP_CRM.postman_collection.json`
+
+### Test Credentials
+
+| Role | Email | Password | Permissions |
+|------|-------|----------|-------------|
+| **Admin** | `admin@erp.com` | `password123` | Full access (View, CRUD, Confirm, Cancel) |
+| **Sales** | `sales@erp.com` | `password123` | CRUD Customers, Create/Confirm Challans |
+| **Warehouse** | `warehouse@erp.com` | `password123` | CRUD Products, Log Stock Movements |
+| **Accounts** | `accounts@erp.com` | `password123` | View only (No write actions) |
+
+---
+
 ## Architecture
 
 ```
