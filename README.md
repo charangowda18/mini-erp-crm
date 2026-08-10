@@ -72,54 +72,44 @@ backend/src/
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL 14+
+- PostgreSQL 14+ (or Neon.tech database URL)
 - npm
 
-### 1. Clone and Install
+### 🖥️ Local Frontend Setup
+
+The frontend is a custom-built Vite React application with premium styles, charts, indicators, and full CRM/Challan workflows.
 
 ```bash
-git clone <repository-url>
+cd FSD/frontend
+npm install
+npm run dev
+```
+
+The frontend will run at `http://localhost:5173`. Open this URL in your web browser to access the live dashboard connected to your Render API.
+
+### ⚙️ Local Backend Setup
+
+1. Install dependencies:
+```bash
 cd FSD/backend
 npm install
 ```
 
-### 2. Configure Environment
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your PostgreSQL credentials:
-
+2. Configure environment:
+Create a `.env` file inside `/backend` using `backend/.env.example` as a template and provide your database url:
 ```env
 PORT=3000
-NODE_ENV=development
-DATABASE_URL=postgresql://username:password@localhost:5432/mini_erp_crm
-JWT_SECRET=your-secret-key-here
-JWT_EXPIRES_IN=24h
-CORS_ORIGIN=http://localhost:5173
+DATABASE_URL=your-postgres-connection-string
+JWT_SECRET=mini-erp-crm-jwt-secret-key-2024
 ```
 
-### 3. Create Database
-
-```sql
-CREATE DATABASE mini_erp_crm;
-```
-
-### 4. Run Migrations
-
+3. Run migrations and seed data:
 ```bash
 npm run migrate
-```
-
-### 5. Seed Test Data
-
-```bash
 npm run seed
 ```
 
-### 6. Start Development Server
-
+4. Start backend in development mode:
 ```bash
 npm run dev
 ```
