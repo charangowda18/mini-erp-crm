@@ -69,52 +69,53 @@ backend/src/
 
 ## Setup Instructions
 
-### Prerequisites
-
-- Node.js 18+
-- PostgreSQL 14+ (or Neon.tech database URL)
-- npm
-
-### 🖥️ Local Frontend Setup
-
-The frontend is a custom-built Vite React application with premium styles, charts, indicators, and full CRM/Challan workflows.
-
+### ⚡ Quick Start: Running with Docker (Recommended)
+If you have Docker installed, you can spin up the entire stack (PostgreSQL database + Express Backend + React Frontend) with a single command:
 ```bash
-cd FSD/frontend
-npm install
-npm run dev
+docker compose up --build
 ```
+The database will be automatically provisioned, migrated, seeded, and running.
 
-The frontend will run at `http://localhost:5173`. Open this URL in your web browser to access the live dashboard connected to your Render API.
+---
 
-### ⚙️ Local Backend Setup
+### 🖥️ Local Manual Setup (Dual-Terminal)
+To run the services manually, you need to open **two separate terminal windows/tabs** and run them concurrently.
 
-1. Install dependencies:
-```bash
-cd FSD/backend
-npm install
-```
+#### Terminal 1: Backend Setup & Run
+1. Navigate to the backend directory and install dependencies:
+   ```bash
+   cd backend
+   npm install
+   ```
+2. Create a `.env` file inside the `backend/` directory (see `.env.example` as a template):
+   ```env
+   PORT=3000
+   DATABASE_URL=your-postgres-connection-string
+   JWT_SECRET=mini-erp-crm-jwt-secret-key-2024
+   ```
+3. Run database migrations and seed default demo data:
+   ```bash
+   npm run migrate
+   npm run seed
+   ```
+4. Start the backend API server:
+   ```bash
+   npm run dev
+   ```
+   *The API will run at `http://localhost:3000`.*
 
-2. Configure environment:
-Create a `.env` file inside `/backend` using `backend/.env.example` as a template and provide your database url:
-```env
-PORT=3000
-DATABASE_URL=your-postgres-connection-string
-JWT_SECRET=mini-erp-crm-jwt-secret-key-2024
-```
+#### Terminal 2: Frontend Setup & Run
+1. Navigate to the frontend directory and install dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+2. Start the Vite React development server:
+   ```bash
+   npm run dev
+   ```
+   *The client UI will run at `http://localhost:5173`. Open this URL in your browser to view the application.*
 
-3. Run migrations and seed data:
-```bash
-npm run migrate
-npm run seed
-```
-
-4. Start backend in development mode:
-```bash
-npm run dev
-```
-
-Server runs at `http://localhost:3000`
 
 ## Test Login Credentials
 
