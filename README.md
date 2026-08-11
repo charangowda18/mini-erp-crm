@@ -209,28 +209,9 @@ To run the services manually, you need to open **two separate terminal windows/t
 | JWT_EXPIRES_IN | JWT token expiry | No (default: 24h) |
 | CORS_ORIGIN | Allowed CORS origin | No (default: http://localhost:5173) |
 
-## Deployment
+## Local Production Build
 
-### Using Render (Free Tier)
-
-1. Push code to GitHub
-2. Create a new **Web Service** on Render
-3. Connect your GitHub repo
-4. Set build command: `npm install && npm run build`
-5. Set start command: `npm start`
-6. Add environment variables in Render dashboard
-7. Create a **PostgreSQL** database on Render and use its connection string
-
-### Using Railway
-
-1. Push code to GitHub
-2. Create a new project on Railway
-3. Add a PostgreSQL plugin
-4. Deploy from GitHub
-5. Set environment variables
-6. Railway auto-detects Node.js and handles the rest
-
-### Local Production Build
+To build and run the backend locally in production mode without hot-reloading:
 
 ```bash
 npm run build

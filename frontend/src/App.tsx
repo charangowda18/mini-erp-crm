@@ -4,7 +4,7 @@ import {
   ArrowUpDown, Check, Trash2, Calendar, ShoppingBag, Eye, X, Shield, Printer
 } from 'lucide-react';
 
-const API_BASE = "https://mini-erp-crm-api-t9uv.onrender.com/api";
+const API_BASE = "http://localhost:3000/api";
 
 // Roles & Permissions Mapping
 const PERMISSIONS = {
