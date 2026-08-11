@@ -1,254 +1,133 @@
-# Mini ERP + CRM Operations Portal Documentation
+# Technical Project Documentation: Mini ERP + CRM
 
-A full-stack ERP/CRM system for a wholesale/distribution company. Built with **Node.js**, **TypeScript**, **Express.js**, and **PostgreSQL**.
-
-## 🚀 Test Login Credentials
-
-* **Postman Collection:** Located in the repository at `/backend/postman/Mini_ERP_CRM.postman_collection.json`
-
-### Test Credentials
-
-| Role | Email | Password | Permissions |
-|------|-------|----------|-------------|
-| **Admin** | `admin@erp.com` | `password123` | Full access (View, CRUD, Confirm, Cancel) |
-| **Sales** | `sales@erp.com` | `password123` | CRUD Customers, Create/Confirm Challans |
-| **Warehouse** | `warehouse@erp.com` | `password123` | CRUD Products, Log Stock Movements |
-| **Accounts** | `accounts@erp.com` | `password123` | View only (No write actions) |
+This document contains the core technical design specs, architecture details, database models, and API endpoints for the Mini ERP & CRM Operations Portal.
 
 ---
 
-## Architecture
+## 🏛️ System Architecture
 
 ```
-Client (React Frontend)
-    │
-    ▼
-Express.js REST API (Node.js + TypeScript)
-    │
-    ├── JWT Authentication Middleware
-    ├── Role-Based Access Control (Admin, Sales, Warehouse, Accounts)
-    ├── Zod Input Validation
-    ├── Global Error Handler
-    │
-    ▼
-PostgreSQL Database (7 tables)
+                       ┌─────────────────────────┐
+                       │  Vite React Client UI   │
+                       └────────────┬────────────┘
+                                    │
+                         HTTPS JWT REST Requests
+                                    │
+                                    ▼
+                       ┌─────────────────────────┐
+                       │  Express API Server     │
+                       │  (TypeScript Node.js)   │
+                       └────────────┬────────────┘
+                                    │
+                           Auth / Role Middleware
+                           Zod Schema Validation
+                           ACID DB Transactions
+                                    │
+                                    ▼
+                       ┌─────────────────────────┐
+                       │   PostgreSQL Database   │
+                       └─────────────────────────┘
 ```
 
-### Module Structure
-
-```
-backend/src/
-├── config/         → Database connection, environment variables
-├── middleware/      → Auth, role guard, validation, error handler
-├── modules/
-│   ├── auth/       → Login, JWT, user profile
-│   ├── customers/  → Customer CRUD, search, follow-ups
-│   ├── products/   → Product CRUD, stock movements, low-stock alerts
-│   └── challans/   → Sales challan create/confirm/cancel with stock logic
-├── db/
-│   ├── migrations/ → SQL schema
-│   └── seed.ts     → Test data
-├── types/          → TypeScript types and enums
-└── app.ts          → Express entry point
-```
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Runtime | Node.js |
-| Language | TypeScript |
-| Framework | Express.js |
-| Database | PostgreSQL |
-| Auth | JWT (jsonwebtoken) |
-| Validation | Zod |
-| Password Hashing | bcryptjs |
-
-## Setup Instructions
-
-### ⚡ Quick Start: Running with Docker (Recommended)
-If you have Docker installed, you can spin up the entire stack (PostgreSQL database + Express Backend + React Frontend) with a single command:
-```bash
-docker compose up --build
-```
-The database will be automatically provisioned, migrated, seeded, and running.
+The system uses a clean, decoupled design split into two modules:
+*   **Express API Server (`/backend`):** A stateless REST API configured with a clean router layer, controller layer, validation middlewares, and repository queries.
+*   **Vite React Application (`/frontend`):** A single-page client built with responsive dashboard layouts, role gating, form validations, and custom browser-native invoice exporting layouts.
 
 ---
 
-### 🖥️ Local Manual Setup (Dual-Terminal)
-To run the services manually, you need to open **two separate terminal windows/tabs** and run them concurrently.
+## 🗄️ Database Design
 
-#### Terminal 1: Backend Setup & Run
-1. Navigate to the backend directory and install dependencies:
-   ```bash
-   cd backend
-   npm install
-   ```
-2. Create a `.env` file inside the `backend/` directory (see `.env.example` as a template):
-   ```env
-   PORT=3000
-   DATABASE_URL=your-postgres-connection-string
-   JWT_SECRET=mini-erp-crm-jwt-secret-key-2024
-   ```
-3. Run database migrations and seed default demo data:
-   ```bash
-   npm run migrate
-   npm run seed
-   ```
-4. Start the backend API server:
-   ```bash
-   npm run dev
-   ```
-   *The API will run at `http://localhost:3000`.*
+The schema runs on PostgreSQL and consists of 6 tables. It features constraints and indexes to enforce data integrity:
 
-#### Terminal 2: Frontend Setup & Run
-1. Navigate to the frontend directory and install dependencies:
-   ```bash
-   cd frontend
-   npm install
-   ```
-2. Start the Vite React development server:
-   ```bash
-   npm run dev
-   ```
-   *The client UI will run at `http://localhost:5173`. Open this URL in your browser to view the application.*
-
-
-## Test Login Credentials
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@erp.com | password123 |
-| Sales | sales@erp.com | password123 |
-| Warehouse | warehouse@erp.com | password123 |
-| Accounts | accounts@erp.com | password123 |
-
-## API Endpoints
-
-### Authentication
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/auth/login` | Login, returns JWT | No |
-| GET | `/api/auth/me` | Get current user | Yes |
-
-### Customers
-
-| Method | Endpoint | Description | Roles |
-|--------|----------|-------------|-------|
-| GET | `/api/customers` | List (paginated, searchable) | All |
-| GET | `/api/customers/:id` | Detail with follow-ups | All |
-| POST | `/api/customers` | Create | Admin, Sales |
-| PUT | `/api/customers/:id` | Update | Admin, Sales |
-| GET | `/api/customers/:id/follow-ups` | Follow-up history | All |
-| POST | `/api/customers/:id/follow-ups` | Add follow-up | Admin, Sales |
-
-**Query params:** `?page=1&limit=10&search=keyword`
-
-### Products
-
-| Method | Endpoint | Description | Roles |
-|--------|----------|-------------|-------|
-| GET | `/api/products` | List (paginated, filterable) | All |
-| GET | `/api/products/:id` | Detail with movements | All |
-| GET | `/api/products/low-stock` | Products below min stock | All |
-| POST | `/api/products` | Create | Admin, Warehouse |
-| PUT | `/api/products/:id` | Update | Admin, Warehouse |
-| POST | `/api/products/:id/stock-movements` | Record IN/OUT | Admin, Warehouse |
-| GET | `/api/products/:id/stock-movements` | Movement history | All |
-
-**Query params:** `?page=1&limit=10&search=keyword&category=Grains`
-
-### Sales Challans
-
-| Method | Endpoint | Description | Roles |
-|--------|----------|-------------|-------|
-| GET | `/api/challans` | List (paginated) | All |
-| GET | `/api/challans/:id` | Detail with items | All |
-| POST | `/api/challans` | Create (Draft/Confirmed) | Admin, Sales |
-| PATCH | `/api/challans/:id/confirm` | Confirm draft | Admin, Sales |
-| PATCH | `/api/challans/:id/cancel` | Cancel challan | Admin |
-
-**Query params:** `?page=1&limit=10&status=Draft`
-
-## Business Logic
-
-### Sales Challan Flow
-
-1. Sales user creates a challan by selecting a customer and adding products with quantities
-2. Challan can be saved as **Draft** (no stock impact) or **Confirmed** (reduces stock)
-3. Challan number is auto-generated: `CH-YYYYMMDD-XXXX`
-4. On confirmation:
-   - All product stocks are validated in a **database transaction**
-   - If ANY product has insufficient stock, the entire operation is rejected
-   - Stock is reduced and stock movement records are created
-   - Product snapshots (name, SKU, price at time) are stored in challan items
-5. A confirmed or draft challan can be **cancelled** by Admin only
-6. Cancellation does NOT restore stock (assumption: separate stock-in should be done manually)
-
-### Role Permissions
-
-| Feature | Admin | Sales | Warehouse | Accounts |
-|---------|-------|-------|-----------|----------|
-| View all data | ✅ | ✅ | ✅ | ✅ |
-| Manage customers | ✅ | ✅ | ❌ | ❌ |
-| Manage products | ✅ | ❌ | ✅ | ❌ |
-| Stock movements | ✅ | ❌ | ✅ | ❌ |
-| Create challans | ✅ | ✅ | ❌ | ❌ |
-| Confirm challans | ✅ | ✅ | ❌ | ❌ |
-| Cancel challans | ✅ | ❌ | ❌ | ❌ |
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| PORT | Server port | No (default: 3000) |
-| NODE_ENV | Environment | No (default: development) |
-| DATABASE_URL | PostgreSQL connection string | Yes |
-| JWT_SECRET | Secret key for JWT signing | Yes |
-| JWT_EXPIRES_IN | JWT token expiry | No (default: 24h) |
-| CORS_ORIGIN | Allowed CORS origin | No (default: http://localhost:5173) |
-
-## Local Production Build
-
-To build and run the backend locally in production mode without hot-reloading:
-
-```bash
-npm run build
-npm start
+```
+                  ┌─────────────────┐
+                  │      users      │
+                  └────────┬────────┘
+                           │ 1:N
+         ┌─────────────────┼─────────────────┐
+         │ 1:N             │ 1:N             │ 1:N
+  ┌──────▼──────┐   ┌──────▼──────┐   ┌──────▼──────┐
+  │  customers  │   │  products   │   │  challans   │
+  └──────┬──────┘   └──────┬──────┘   └──────┬──────┘
+         │ 1:N             │ 1:N             │ 1:N
+  ┌──────▼──────┐   ┌──────▼──────┐   ┌──────▼──────┐
+  │ follow_ups  │   │stock_movem. │   │challan_items│
+  └─────────────┘   └─────────────┘   └─────────────┘
 ```
 
-## 🌟 Bonus Features Implemented
+### Table Definitions & Constraints
 
-The following extra features were successfully completed to showcase robust devops and advanced operations portal styling:
+1.  **`users`:** Stores system users. Role values: `Admin`, `Sales`, `Warehouse`, `Accounts`.
+2.  **`customers`:** Manages CRM profiles. Customer types: `Retail`, `Wholesale`, `Distributor`. Status values: `Lead`, `Active`, `Inactive`.
+3.  **`follow_ups`:** Tracks CRM log history. Linked to `customers` (foreign key cascades).
+4.  **`products`:** Tracks catalog details. Includes unique SKU checks, unit prices, and alert minimum thresholds.
+5.  **`stock_movements`:** Logs manual adjustments and challan confirmations. Linked to `products`. Movement types: `IN`, `OUT`.
+6.  **`challans`:** Sales orders ledger. Status values: `Draft`, `Confirmed`, `Cancelled`.
+7.  **`challan_items`:** Line items per order. **Saves snapshot data** (`product_name_snapshot`, `product_sku_snapshot`, `product_price_snapshot`) to ensure historical records remain unchanged even if the products catalog is updated later.
 
-### 1. Docker Virtualization & Setup (Bonus Point Requirement)
-A complete `docker-compose.yml` config is included to instantly run the PostgreSQL database and backend service in isolated containers:
-```bash
-docker compose up --build
-```
-This automatically handles binding, port exposure, and networking link connections.
+---
 
-### 2. Export Invoice as PDF (Bonus Point Requirement)
-Inside the **Sales Challan Detail** view, clicking **Export PDF / Print** utilizes custom CSS print media rules:
-- Formats the page as a clean corporate invoice.
-- Hides dashboard headers, sidebar navigation, buttons, and alert toast popups automatically.
-- Produces a print-ready document or high-quality PDF directly from the browser.
+## ⚡ Core Business Logic & ACID Transactions
 
-## Assumptions
+### 1. Sales Challan Stock Dispatch Flow
+When a Challan is saved as **Confirmed**, the system must safely deduct inventory:
+*   **Step 1:** The backend opens a SQL transaction (`BEGIN`).
+*   **Step 2:** It performs a row-level write lock using `SELECT ... FOR UPDATE` on all products specified in the challan.
+*   **Step 3:** The backend compares the requested quantity against the locked `current_stock`.
+*   **Step 4:** If *any* product has insufficient stock, the transaction instantly rolls back (`ROLLBACK`) and returns a `400 Bad Request` payload, preventing stock quantities from going negative.
+*   **Step 5:** If inventory is sufficient, the stock is deducted, stock movement records are written, product specs are snapshot, and the changes are committed (`COMMIT`).
 
-1. Challan cancellation does not restore stock — a separate stock-in movement should be created
-2. All authenticated users can view all data; write operations are role-restricted
-3. Email is unique per user
-4. SKU is unique per product
-5. Stock cannot go negative
-6. Password is hashed with bcrypt (10 rounds)
-7. JWT tokens expire in 24 hours
+---
 
-## Known Limitations
+## 🔌 API Endpoints Reference
 
-1. No user registration endpoint — users are created via seed or direct DB insert
-2. No password reset or change functionality
-3. No file upload capability
-4. No real-time notifications for low stock
-5. No audit log beyond stock movements
+### 🔐 Authentication
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/api/auth/login` | Log in user, returns JWT token | No |
+| GET | `/api/auth/me` | Retrieve profile of authenticated user | Yes |
+
+### 👥 Customer CRM
+
+| Method | Endpoint | Description | Allowed Roles |
+|--------|----------|-------------|---------------|
+| GET | `/api/customers` | Query paginated list of customers (`?search=`) | All Roles |
+| GET | `/api/customers/:id` | View detailed profile and follow-up timeline | All Roles |
+| POST | `/api/customers` | Add a new lead/customer | Admin, Sales |
+| PUT | `/api/customers/:id` | Update customer CRM fields | Admin, Sales |
+| POST | `/api/customers/:id/follow-ups` | Log a new CRM timeline follow-up note | Admin, Sales |
+
+### 📦 Products & Inventory
+
+| Method | Endpoint | Description | Allowed Roles |
+|--------|----------|-------------|---------------|
+| GET | `/api/products` | Query paginated products list (`?search=`, `?category=`) | All Roles |
+| GET | `/api/products/low-stock` | Retrieve products below their alert threshold | All Roles |
+| GET | `/api/products/:id` | View product specs and stock ledger history | All Roles |
+| POST | `/api/products` | Create a new product entry | Admin, Warehouse |
+| PUT | `/api/products/:id` | Edit product pricing and specifications | Admin, Warehouse |
+| POST | `/api/products/:id/stock-movements` | Log manual stock adjustment (IN/OUT) | Admin, Warehouse |
+
+### 📄 Sales Challans
+
+| Method | Endpoint | Description | Allowed Roles |
+|--------|----------|-------------|---------------|
+| GET | `/api/challans` | List all order documents | All Roles |
+| GET | `/api/challans/:id` | View challan item details and snapshots | All Roles |
+| POST | `/api/challans` | Create a new challan as Draft or Confirmed | Admin, Sales |
+| PATCH | `/api/challans/:id/confirm` | Confirm draft challan (deducts stock) | Admin, Sales |
+| PATCH | `/api/challans/:id/cancel` | Cancel an active challan | Admin |
+
+---
+
+## 🛠️ Assumptions & Limitations
+
+### Business Assumptions
+1.  **Challan Cancellations:** Cancelling a confirmed challan marks its status as `Cancelled` but does not automatically return the stock to inventory. Stock returns must be manually logged as an `IN` stock movement by the warehouse team.
+2.  **Stateless Session:** Session management is completely client-side using stateless JWT. Access keys expire in 24 hours.
+3.  **Unique Fields:** Emails are unique to users; SKUs are unique to products.
+
+### Limitations
+1.  **Self-Registration:** There is no registration endpoint; users must be provisioned via database seed files or direct administrator inserts.
+2.  **File Uploads:** Product images use text-based URL paths instead of file storage uploads.
