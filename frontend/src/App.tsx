@@ -1361,13 +1361,13 @@ function App() {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Unit Price (INR)</label>
-                  <input type="number" step="0.01" className="form-control" required value={productForm.unit_price} onChange={(e) => setProductForm(prev => ({ ...prev, unit_price: parseFloat(e.target.value) || 0 }))} />
+                  <input type="number" step="0.01" className="form-control" required value={productForm.unit_price} onChange={(e) => setProductForm(prev => ({ ...prev, unit_price: e.target.value === '' ? '' as any : parseFloat(e.target.value) }))} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Minimum Stock Alert Threshold</label>
-                  <input type="number" className="form-control" required value={productForm.min_stock_alert} onChange={(e) => setProductForm(prev => ({ ...prev, min_stock_alert: parseInt(e.target.value) || 0 }))} />
+                  <input type="number" className="form-control" required value={productForm.min_stock_alert} onChange={(e) => setProductForm(prev => ({ ...prev, min_stock_alert: e.target.value === '' ? '' as any : parseInt(e.target.value) }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Warehouse Rack Location</label>
@@ -1377,7 +1377,7 @@ function App() {
               {!editingProduct && (
                 <div className="form-group">
                   <label className="form-label">Initial Stock Quantity</label>
-                  <input type="number" className="form-control" required value={productForm.current_stock} onChange={(e) => setProductForm(prev => ({ ...prev, current_stock: parseInt(e.target.value) || 0 }))} />
+                  <input type="number" className="form-control" required value={productForm.current_stock} onChange={(e) => setProductForm(prev => ({ ...prev, current_stock: e.target.value === '' ? '' as any : parseInt(e.target.value) }))} />
                 </div>
               )}
 
@@ -1412,7 +1412,7 @@ function App() {
               </div>
               <div className="form-group">
                 <label className="form-label">Quantity Changed</label>
-                <input type="number" min="1" required className="form-control" value={movementForm.quantity_changed} onChange={(e) => setMovementForm(prev => ({ ...prev, quantity_changed: parseInt(e.target.value) || 1 }))} />
+                <input type="number" min="1" required className="form-control" value={movementForm.quantity_changed} onChange={(e) => setMovementForm(prev => ({ ...prev, quantity_changed: e.target.value === '' ? '' as any : parseInt(e.target.value) }))} />
               </div>
               <div className="form-group">
                 <label className="form-label">Reason / Reference</label>
@@ -1478,7 +1478,7 @@ function App() {
                       <div>
                         <input type="number" min="1" className="form-control" placeholder="Qty" required value={item.quantity} onChange={(e) => {
                           const newItems = [...challanForm.items];
-                          newItems[idx].quantity = parseInt(e.target.value) || 1;
+                          newItems[idx].quantity = e.target.value === '' ? '' as any : parseInt(e.target.value);
                           setChallanForm(prev => ({ ...prev, items: newItems }));
                         }} />
                       </div>
