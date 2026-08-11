@@ -40,6 +40,7 @@ function App() {
   const [token, setToken] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState<'dashboard' | 'customers' | 'products' | 'challans'>('dashboard');
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [toasts, setToasts] = useState<Array<{ id: number, text: string, type: 'success' | 'error' | 'info' }>>([]);
   
   // Login Form
@@ -270,6 +271,8 @@ function App() {
   // Submit Operations
   const handleCustomerSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       if (editingCustomer) {
         await apiCall(`/customers/${editingCustomer.id}`, 'PUT', customerForm);
@@ -283,11 +286,15 @@ function App() {
       fetchCustomers();
     } catch (err: any) {
       showToast(err.message, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       if (editingProduct) {
         await apiCall(`/products/${editingProduct.id}`, 'PUT', productForm);
@@ -301,12 +308,16 @@ function App() {
       fetchProducts();
     } catch (err: any) {
       showToast(err.message, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleFollowUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!followUpNote) return;
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await apiCall(`/customers/${selectedCustomerId}/follow-ups`, 'POST', {
         notes: followUpNote,
@@ -318,11 +329,15 @@ function App() {
       loadCustomerDetail(selectedCustomerId!);
     } catch (err: any) {
       showToast(err.message, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleStockMovementSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await apiCall(`/products/${selectedProductId}/stock-movements`, 'POST', movementForm);
       showToast("Stock movement recorded!", "success");
@@ -331,6 +346,8 @@ function App() {
       loadProductDetail(selectedProductId!);
     } catch (err: any) {
       showToast(err.message, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -347,6 +364,8 @@ function App() {
       return;
     }
 
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       await apiCall('/challans', 'POST', challanForm);
       showToast(`Challan created as ${challanForm.status}!`, "success");
@@ -355,11 +374,15 @@ function App() {
       fetchChallans();
     } catch (err: any) {
       showToast(err.message, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // Challan confirmations / cancellations
   const handleConfirmChallan = async (id: string) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const data = await apiCall(`/challans/${id}/confirm`, 'PATCH');
       showToast("Challan confirmed successfully!", "success");
@@ -367,11 +390,15 @@ function App() {
       fetchChallans(); // Refresh table
     } catch (err: any) {
       showToast(err.message, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleCancelChallan = async (id: string) => {
     if (!window.confirm("Are you sure you want to cancel this challan? This cannot be undone.")) return;
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const data = await apiCall(`/challans/${id}/cancel`, 'PATCH');
       showToast("Challan cancelled.", "info");
@@ -379,6 +406,8 @@ function App() {
       fetchChallans(); // Refresh table
     } catch (err: any) {
       showToast(err.message, "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
